@@ -1,0 +1,245 @@
+<?php 
+header("Content-Type: text/html; charset=utf-8");
+require_once("connMysql.php");
+session_start();
+//檢查是否經過登入
+if(!isset($_SESSION["loginMember"]) || ($_SESSION["loginMember"]=="")){
+	header("Location: index.php");
+}
+//檢查權限是否足夠
+if($_SESSION["memberLevel"]=="member"){
+	header("Location: member_center.php");
+}
+//執行登出動作
+if(isset($_GET["logout"]) && ($_GET["logout"]=="true")){
+	unset($_SESSION["loginMember"]);
+	unset($_SESSION["memberLevel"]);
+	header("Location: index.php");
+}
+//執行更新動作
+$con = mysqli_connect("localhost","root","","phpmember");
+if(isset($_POST["action"])&&($_POST["action"]=="update")){	
+	$query_update = "UPDATE `memberdata` SET ";
+	//若有修改密碼，則更新密碼。
+	if(($_POST["m_passwd"]!="")&&($_POST["m_passwd"]==$_POST["m_passwdrecheck"])){
+		$query_update .= "`m_passwd`='".md5($_POST["m_passwd"])."',";
+	}	
+	$query_update .= "`m_name`='".$_POST["m_name"]."',";	
+	$query_update .= "`m_sex`='".$_POST["m_sex"]."',";
+	$query_update .= "`m_birthday`='".$_POST["m_birthday"]."',";
+	$query_update .= "`m_email`='".$_POST["m_email"]."',";
+	$query_update .= "`m_url`='".$_POST["m_url"]."',";
+	$query_update .= "`m_phone`='".$_POST["m_phone"]."',";
+	$query_update .= "`m_address`='".$_POST["m_address"]."' ";
+	$query_update .= "WHERE `m_id`=".$_POST["m_id"];	
+	mysqli_query($con,$query_update);
+	//重新導向
+	header("Location: member_admin.php");
+}
+$user_display_name = 'Guest';
+if (!empty($_SESSION['loginMember'] ?? '')) {
+// 這裡讀資料庫
+$con = @mysqli_connect("localhost","root","","phpmember");
+$query_RecMember = "SELECT * FROM `memberdata` WHERE `m_username`='".$_SESSION["loginMember"]."'";
+$RecMember = mysqli_query($con,$query_RecMember);   
+$row_RecMember=mysqli_fetch_assoc($RecMember);
+$user_display_name = $row_RecMember["m_name"];
+}
+//選取管理員資料
+$con = @mysqli_connect("localhost","root","","phpmember");
+$query_RecAdmin = "SELECT * FROM `memberdata` WHERE `m_username`='".$_SESSION["loginMember"]."'";
+$RecAdmin = mysqli_query($con,$query_RecAdmin);	
+$row_RecAdmin=mysqli_fetch_assoc($RecAdmin);
+//繫結選取會員資料
+$query_RecMember = "SELECT * FROM `memberdata` WHERE `m_id`='".$_GET["id"]."'";
+$RecMember = mysqli_query($con,$query_RecMember);	
+$row_RecMember=mysqli_fetch_assoc($RecMember);
+?>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Coming Soon </title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/pe-icons.css" rel="stylesheet">
+    <link href="css/prettyPhoto.css" rel="stylesheet">
+    <link href="css/animate.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+
+    <script src="js/jquery.js"></script>
+ 
+    <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+    <![endif]-->       
+    <link rel="shortcut icon" href="images/ico/favicon.ico">
+    <link rel="apple-touch-icon" sizes="144x144" href="images/ico/apple-touch-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/ico/apple-touch-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/ico/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" href="images/ico/apple-touch-icon-57x57.png">
+
+<script language="javascript">
+function checkForm(){
+	if(document.formJoin.m_passwd.value!="" || document.formJoin.m_passwdrecheck.value!=""){
+		if(!check_passwd(document.formJoin.m_passwd.value,document.formJoin.m_passwdrecheck.value)){
+			document.formJoin.m_passwd.focus();
+			return false;
+		}
+	}	
+	if(document.formJoin.m_name.value==""){
+		alert("請填寫姓名!");
+		document.formJoin.m_name.focus();
+		return false;
+	}
+	if(document.formJoin.m_birthday.value==""){
+		alert("請填寫生日!");
+		document.formJoin.m_birthday.focus();
+		return false;
+	}
+	if(document.formJoin.m_email.value==""){
+		alert("請填寫電子郵件!");
+		document.formJoin.m_email.focus();
+		return false;
+	}
+	if(!checkmail(document.formJoin.m_email)){
+		document.formJoin.m_email.focus();
+		return false;
+	}
+	return confirm('確定送出嗎？');
+}
+function check_passwd(pw1,pw2){
+	if(pw1==''){
+		alert("密碼不可以空白!");
+		return false;
+	}
+	for(var idx=0;idx<pw1.length;idx++){
+		if(pw1.charAt(idx) == ' ' || pw1.charAt(idx) == '\"'){
+			alert("密碼不可以含有空白或雙引號 !\n");
+			return false;
+		}
+		if(pw1.length<5 || pw1.length>10){
+			alert( "密碼長度只能5到10個字母 !\n" );
+			return false;
+		}
+		if(pw1!= pw2){
+			alert("密碼二次輸入不一樣,請重新輸入 !\n");
+			return false;
+		}
+	}
+	return true;
+}
+function checkmail(myEmail) {
+	var filter  = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+	if(filter.test(myEmail.value)){
+		return true;
+	}
+	alert("電子郵件格式不正確");
+	return false;
+}
+</script>
+</head>
+
+<body>
+  <div id="preloader"></div>
+    <header class="navbar navbar-inverse navbar-fixed-top opaqued" role="banner">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <i class="fa fa-bars"></i>
+                </button>
+                 <a class="navbar-brand" href="index-coming-soon.php"><h1><span class="pe-7s-gleam bounce-in"></span><?php echo $user_display_name;?></h1></a>
+            </div>
+            <div class="collapse navbar-collapse">
+                 <ul class="nav navbar-nav navbar-right">
+                    <li class="active"><a href="index-coming-soon.php">Home</a></li>                    
+                    <li><a href="board.php">BOARD</a></li>
+                    <li><a href="404.php">GOODS</a></li>
+                    <li><a href="404.php">Contact</a></li>
+                    <li><a href="join.php">SIGN UP </a></li>
+                </ul>
+            </div>
+        </div>
+    </header><!--/header-->
+    <div style="padding-top: 50px">
+<table width="780" border="0" align="center" cellpadding="4" cellspacing="0">
+  <tr>
+    <td class="tdbline"><table width="100%" border="0" cellspacing="0" cellpadding="10">
+      <tr valign="top">
+        <td class="tdrline"><form action="" method="POST" name="formJoin" id="formJoin" onSubmit="return checkForm();">
+          <div class="dataDiv">
+            <hr size="1" />
+            <p class="heading">帳號資料</p>
+            <p><strong>使用帳號</strong>
+              ：<?php echo $row_RecMember["m_username"];?></p>
+            <p><strong>使用密碼</strong> ：
+              <input name="m_passwd" type="password" class="normalinput" id="m_passwd">
+              <br>
+            </p>
+            <p><strong>確認密碼</strong> ：
+              <input name="m_passwdrecheck" type="password" class="normalinput" id="m_passwdrecheck">
+              <br>
+              <span class="smalltext">若不修改密碼，請不要填寫。若要修改，請輸入密碼</span><span class="smalltext">二次。<br></span></p>
+            <hr size="1" />
+            <p class="heading">個人資料</p>
+            <p><strong>真實姓名</strong>：
+                <input name="m_name" type="text" class="normalinput" id="m_name" value="<?php echo $row_RecMember["m_name"];?>">
+                <font color="#FF0000">*</font> </p>
+            <p><strong>性　　別</strong>：
+              <input name="m_sex" type="radio" value="女" <?php if($row_RecMember["m_sex"]=="女") echo "checked";?>>
+              女
+  <input name="m_sex" type="radio" value="男" <?php if($row_RecMember["m_sex"]=="男") echo "checked";?>>
+              男 <font color="#FF0000">*</font></p>
+            <p><strong>生　　日</strong>：
+                <input name="m_birthday" type="text" class="normalinput" id="m_birthday" value="<?php echo $row_RecMember["m_birthday"];?>">
+                <font color="#FF0000">*</font> <br>
+                <span class="smalltext">為西元格式(YYYY-MM-DD)。 </span></p>
+            <p><strong>電子郵件</strong>：
+                <input name="m_email" type="text" class="normalinput" id="m_email" value="<?php echo $row_RecMember["m_email"];?>">
+                <font color="#FF0000">*</font> </p>
+            <p class="smalltext">請確定此電子郵件為可使用狀態，以方便未來系統使用，如補寄會員密碼信。</p>
+            <p><strong>個人網頁</strong>：
+                <input name="m_url" type="text" class="normalinput" id="m_url" value="<?php echo $row_RecMember["m_url"];?>">
+                <br>
+                <span class="smalltext">請以「http://」 為開頭。</span> </p>
+            <p><strong>電　　話</strong>：
+                <input name="m_phone" type="text" class="normalinput" id="m_phone" value="<?php echo $row_RecMember["m_phone"];?>">
+            </p>
+            <p><strong>住　　址</strong>：
+                <input name="m_address" type="text" class="normalinput" id="m_address" value="<?php echo $row_RecMember["m_address"];?>" size="40">
+            </p>
+            <p> <font color="#FF0000">*</font> 表示為必填的欄位</p>
+          </div>
+          <hr size="1" />
+          <p align="center">
+            <input name="m_id" type="hidden" id="m_id" value="<?php echo $row_RecMember["m_id"];?>">
+            <input name="action" type="hidden" id="action" value="update">
+            <input class="btn btn-success" type="submit" name="Submit2" value="修改資料">
+            <input class="btn btn-danger" type="reset" name="Submit3" value="重設資料">
+            <input class="btn btn-warning" type="button" name="Submit" value="回上一頁" onClick="window.history.back();">
+          </p>
+        </form></td>
+        <td width="200">
+        <div class="boxtl"></div><div class="boxtr"></div>
+<div class="regbox" style="padding-top: 250px">
+          <p class="heading"><strong>會員系統</strong></p>
+          
+            <p><strong><?php echo $row_RecAdmin["m_name"];?></strong> Hello</p>
+            <p>            本次登入的時間為：<br>
+            <?php echo $row_RecAdmin["m_logintime"];?></p>
+            <p align="center"><a href="member_center.php" class="btn btn-info">會員中心</a>  <a href="?logout=true" class="btn btn-danger">登出系統</a></p>
+</div>
+        <div class="boxbl"></div><div class="boxbr"></div></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/jquery.prettyPhoto.js"></script>
+    <script src="js/plugins.js"></script>
+    <script src="js/init.js"></script>
+</body>
+</html>
