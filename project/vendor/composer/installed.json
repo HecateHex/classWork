@@ -1,0 +1,111 @@
+[
+    {
+        "name": "vlucas/phpdotenv",
+        "version": "v2.4.0",
+        "version_normalized": "2.4.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/vlucas/phpdotenv.git",
+            "reference": "3cc116adbe4b11be5ec557bf1d24dc5e3a21d18c"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/vlucas/phpdotenv/zipball/3cc116adbe4b11be5ec557bf1d24dc5e3a21d18c",
+            "reference": "3cc116adbe4b11be5ec557bf1d24dc5e3a21d18c",
+            "shasum": ""
+        },
+        "require": {
+            "php": ">=5.3.9"
+        },
+        "require-dev": {
+            "phpunit/phpunit": "^4.8 || ^5.0"
+        },
+        "time": "2016-09-01T10:05:43+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "2.4-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "Dotenv\\": "src/"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "BSD-3-Clause-Attribution"
+        ],
+        "authors": [
+            {
+                "name": "Vance Lucas",
+                "email": "vance@vancelucas.com",
+                "homepage": "http://www.vancelucas.com"
+            }
+        ],
+        "description": "Loads environment variables from `.env` to `getenv()`, `$_ENV` and `$_SERVER` automagically.",
+        "keywords": [
+            "dotenv",
+            "env",
+            "environment"
+        ]
+    },
+    {
+        "name": "league/plates",
+        "version": "3.3.0",
+        "version_normalized": "3.3.0.0",
+        "source": {
+            "type": "git",
+            "url": "https://github.com/thephpleague/plates.git",
+            "reference": "b1684b6f127714497a0ef927ce42c0b44b45a8af"
+        },
+        "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/thephpleague/plates/zipball/b1684b6f127714497a0ef927ce42c0b44b45a8af",
+            "reference": "b1684b6f127714497a0ef927ce42c0b44b45a8af",
+            "shasum": ""
+        },
+        "require": {
+            "php": "^5.3 | ^7.0"
+        },
+        "require-dev": {
+            "mikey179/vfsstream": "^1.4",
+            "phpunit/phpunit": "~4.0",
+            "squizlabs/php_codesniffer": "~1.5"
+        },
+        "time": "2016-12-28T00:14:17+00:00",
+        "type": "library",
+        "extra": {
+            "branch-alias": {
+                "dev-master": "3.0-dev"
+            }
+        },
+        "installation-source": "dist",
+        "autoload": {
+            "psr-4": {
+                "League\\Plates\\": "src"
+            }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+            "MIT"
+        ],
+        "authors": [
+            {
+                "name": "Jonathan Reinink",
+                "email": "jonathan@reinink.ca",
+                "role": "Developer"
+            }
+        ],
+        "description": "Plates, the native PHP template system that's fast, easy to use and easy to extend.",
+        "homepage": "http://platesphp.com",
+        "keywords": [
+            "league",
+            "package",
+            "templates",
+            "templating",
+            "views"
+        ]
+    }
+]
